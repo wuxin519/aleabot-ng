@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AleaBot NG 管理后台</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --panel: #171a2e;
+    --panel-2: #1e2340;
+    --border: #2b3157;
+    --text: #e6e8f5;
+    --muted: #9aa0c7;
+    --accent: #6c8cff;
+    --accent-2: #4ad4a8;
+    --warn: #ffb454;
+    --danger: #ff6b81;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+  }
+  header {
+    background: linear-gradient(135deg, #1b2145, #12162c);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+  }
+  header h1 { margin: 0; font-size: 19px; letter-spacing: 1px; }
+  header h1 span { color: var(--accent); }
+  .status-pills { display: flex; gap: 10px; }
+  .pill {
+    padding: 4px 12px; border-radius: 20px; font-size: 12px;
+    border: 1px solid var(--border); background: var(--panel-2); color: var(--muted);
+  }
+  .pill.on { color: #0b1f17; background: var(--accent-2); border-color: var(--accent-2); font-weight: 600; }
+  .pill.off { color: var(--danger); border-color: #4a2438; }
+
+  nav { display: flex; gap: 4px; padding: 14px 28px 0; border-bottom: 1px solid var(--border); background: var(--panel); }
+  nav button {
+    background: none; border: none; color: var(--muted); padding: 10px 18px;
+    cursor: pointer; font-size: 14px; border-bottom: 2px solid transparent;
+  }
+  nav button:hover { color: var(--text); }
+  nav button.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  main { padding: 24px 28px 60px; }
+  .tab { display: none; }
+  .tab.active { display: block; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px;
+  }
+  .card .label { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+  .card .value { font-size: 26px; font-weight: 700; }
+  .card .value.small { font-size: 16px; font-weight: 500; }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+  input, select, button {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; outline: none;
+    font-family: inherit;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  button.btn { cursor: pointer; transition: .15s; }
+  button.btn:hover { background: #262c50; border-color: var(--accent); }
+  button.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.btn.primary:hover { background: #5a7bf0; }
+  button.btn.danger { color: var(--danger); border-color: #4a2438; }
+  /* a 元素伪装成按钮时补齐样式与 hover（button.btn 的规则选不到 a） */
+  a.btn {
+    text-decoration: none; display: inline-block; cursor: pointer; transition: .15s;
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; text-align: center;
+  }
+  a.btn:hover { background: #262c50; border-color: var(--accent); color: var(--text); }
+  a.btn:visited { color: var(--text); }
+  button.btn:disabled { opacity: .45; cursor: not-allowed; }
+  button.btn:disabled:hover { background: var(--panel-2); border-color: var(--border); }
+
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  th { background: var(--panel-2); color: var(--muted); font-weight: 600; font-size: 12px; }
+  tr:hover td { background: #1b2040; }
+  td.mono { font-family: "Consolas", monospace; color: var(--accent-2); }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 6px; font-size: 11px; background: var(--panel-2); border: 1px solid var(--border); }
+  .tag.qq { color: #6cb6ff; border-color: #2b4a6e; }
+  .tag.kook { color: #a58cff; border-color: #40356e; }
+
+  .empty { text-align: center; color: var(--muted); padding: 40px; }
+  .pager { display: flex; gap: 10px; align-items: center; margin-top: 16px; color: var(--muted); }
+  .hint { color: var(--muted); font-size: 12px; margin: 6px 0 18px; line-height: 1.7; }
+  code { background: var(--panel-2); padding: 2px 6px; border-radius: 5px; color: var(--accent-2); font-size: 12px; }
+
+  /* ---------- 帮助图片页 ---------- */
+  .helpimg-wrap { display: grid; grid-template-columns: minmax(0,1fr) 260px; gap: 22px; align-items: start; }
+  @media (max-width: 820px) { .helpimg-wrap { grid-template-columns: 1fr; } }
+  .helpimg-preview {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+  }
+  .helpimg-label { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+  .helpimg-preview img {
+    display: block; width: 100%; height: auto; border-radius: 8px;
+    background: #fff; border: 1px solid var(--border);
+  }
+  .helpimg-preview img[src=""], .helpimg-preview img:not([src]) {
+    min-height: 120px; background: var(--panel-2);
+  }
+  .helpimg-meta { color: var(--muted); font-size: 12px; margin-top: 10px; line-height: 1.7; }
+  .helpimg-actions { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+  /* 按钮内的文字要能正常换行，否则窄栏下会被截断 */
+  .helpimg-actions .btn { white-space: normal; line-height: 1.5; padding: 10px 12px; }
+  .upload-label { text-align: center; cursor: pointer; display: block; }
+  /* label 伪装成主按钮，需要显式补上 primary 的配色 */
+  label.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  label.btn.primary:hover { background: #5a7bf0; }
+  .helpimg-tip { font-size: 12px; color: var(--muted); min-height: 34px; line-height: 1.6; }
+  .helpimg-tip.ok { color: #59d99b; }
+  .helpimg-tip.err { color: var(--danger); }
+  .badge-cur { display:inline-block; padding:1px 8px; border-radius:6px; font-size:11px;
+    background: var(--panel-2); border:1px solid var(--border); color: var(--muted); margin-left:6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎲 AleaBot <span>NG</span> 管理后台</h1>
+  <div class="status-pills" id="statusPills"></div>
+</header>
+
+<nav>
+  <button class="active" data-tab="overview">概览</button>
+  <button data-tab="logs">掷骰日志</button>
+  <button data-tab="sheets">角色卡</button>
+  <button data-tab="settings">群配置</button>
+  <button data-tab="helpimg">帮助图片</button>
+  <button data-tab="backup">数据备份</button>
+</nav>
+
+<main>
+  <!-- 概览 -->
+  <section class="tab active" id="tab-overview">
+    <div class="cards" id="statCards"></div>
+    <div class="hint">
+      命令行指令：<code>.r 3d6+2</code> 掷骰 · <code>.ra 侦查 60</code> 检定 · <code>.coc</code> 生成角色卡 ·
+      <code>.init add 张三 15</code> 先攻 · <code>.help</code> 全部指令
+    </div>
+  </section>
+
+  <!-- 日志 -->
+  <section class="tab" id="tab-logs">
+    <div class="toolbar">
+      <select id="logPlatform">
+        <option value="">全部平台</option>
+        <option value="qq">QQ</option>
+        <option value="kook">KOOK</option>
+      </select>
+      <input id="logKeyword" placeholder="搜索表达式/用户名…" style="width:220px">
+      <button class="btn" onclick="loadLogs(0)">🔍 查询</button>
+      <span id="logCount" style="color:var(--muted)"></span>
+    </div>
+    <table>
+      <thead><tr><th>时间</th><th>平台</th><th>群</th><th>用户</th><th>表达式</th><th>结果</th><th>明细</th></tr></thead>
+      <tbody id="logBody"></tbody>
+    </table>
+    <div class="pager">
+      <button class="btn" onclick="prevLogs()">← 上一页</button>
+      <span id="logPage"></span>
+      <button class="btn" onclick="nextLogs()">下一页 →</button>
+    </div>
+  </section>
+
+  <!-- 角色卡 -->
+  <section class="tab" id="tab-sheets">
+    <div class="toolbar">
+      <select id="sheetPlatform">
+        <option value="">全部平台</option>
+        <option value="qq">QQ</option>
+        <option value="kook">KOOK</option>
+      </select>
+      <button class="btn" onclick="loadSheets()">🔍 刷新</button>
+    </div>
+    <table>
+      <thead><tr><th>更新时间</th><th>平台</th><th>用户</th><th>规则</th><th>属性摘要</th><th>操作</th></tr></thead>
+      <tbody id="sheetBody"></tbody>
+    </table>
+  </section>
+
+  <!-- 群配置 -->
+  <section class="tab" id="tab-settings">
+    <div class="toolbar">
+      <select id="setPlatform">
+        <option value="qq">QQ</option>
+        <option value="kook">KOOK</option>
+      </select>
+      <input id="setGroupId" placeholder="群/频道 ID" style="width:200px">
+      <button class="btn" onclick="loadSettings()">🔍 查询</button>
+    </div>
+    <div class="toolbar">
+      <input id="setKey" placeholder="键 (prefix / defaultDice)" style="width:200px">
+      <input id="setValue" placeholder="值 (如 . 或 1d100)" style="width:200px">
+      <button class="btn primary" onclick="saveSetting()">💾 保存</button>
+    </div>
+    <table>
+      <thead><tr><th>键</th><th>值</th></tr></thead>
+      <tbody id="settingBody"></tbody>
+    </table>
+  </section>
+
+  <!-- 帮助图片 -->
+  <section class="tab" id="tab-helpimg">
+    <div class="hint">
+      机器人在群里收到 <code>.help</code> 时会自动回复下面这张图。上传新图后<b>立即生效</b>，无需重启。
+      支持 PNG 格式，建议宽度 2160px（2 倍图更清晰），单文件不超过 8MB。
+    </div>
+
+    <div class="helpimg-wrap">
+      <div class="helpimg-preview">
+        <div class="helpimg-label">当前生效的图片</div>
+        <img id="helpImgPreview" alt="尚未设置帮助图片">
+        <div class="helpimg-meta" id="helpImgMeta">加载中…</div>
+      </div>
+
+      <div class="helpimg-actions">
+        <label class="btn primary upload-label" for="helpImgFile">📤 上传新图片</label>
+        <input type="file" id="helpImgFile" accept="image/png" style="display:none">
+        <button class="btn" id="helpImgReset" onclick="resetHelpImage()">↩ 恢复默认图</button>
+        <a class="btn" id="helpImgDownload" href="/help.png" download="help.png">⬇ 下载当前图</a>
+        <div class="helpimg-tip" id="helpImgMsg"></div>
+      </div>
+    </div>
+
+    <div class="hint" style="margin-top:18px">
+      <b>建议尺寸</b>：与当前图保持一致最稳妥（避免群里显示过大或过小）。
+      想改指令内容本身，编辑项目里的 <code>docs/指令图.html</code> 后运行
+      <code>node docs/render-help-image.js</code> 重新生成，再到本页上传即可。
+    </div>
+  </section>
+
+  <!-- 备份 -->
+  <section class="tab" id="tab-backup">
+    <div class="toolbar">
+      <button class="btn primary" onclick="doBackup()">💾 立即备份</button>
+      <a class="btn" href="/api/export" target="_blank" style="text-decoration:none;display:inline-block">⬇ 导出 JSON</a>
+    </div>
+    <div class="hint">数据库快照会保存到 <code>data/backups/</code>，可随时下载或迁移。系统默认每 24 小时自动备份一次，保留最近 14 份。</div>
+    <table>
+      <thead><tr><th>文件名</th><th>大小</th><th>时间</th><th>操作</th></tr></thead>
+      <tbody id="backupBody"></tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+const TOKEN = new URLSearchParams(location.search).get('token') || '';
+function api(path, opts) {
+  const u = new URL(path, location.origin);
+  if (TOKEN) u.searchParams.set('token', TOKEN);
+  return fetch(u, opts).then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtTime(ts) {
+  if (!ts) return '-';
+  const d = new Date(ts);
+  return d.toLocaleString('zh-CN', { hour12: false });
+}
+function fmtSize(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+  return (n/1024/1024).toFixed(2) + ' MB';
+}
+
+// ---------- 标签切换 ----------
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'logs') loadLogs(0);
+    if (btn.dataset.tab === 'sheets') loadSheets();
+    if (btn.dataset.tab === 'helpimg') loadHelpImage();
+    if (btn.dataset.tab === 'backup') loadBackups();
+  };
+});
+
+// ---------- 帮助图片 ----------
+/** 在提示区显示一行反馈 */
+function helpMsg(text, kind) {
+  const el = document.getElementById('helpImgMsg');
+  el.textContent = text || '';
+  el.className = 'helpimg-tip' + (kind ? ' ' + kind : '');
+}
+
+/** 读取并展示当前 .help 图片信息 */
+async function loadHelpImage() {
+  try {
+    const d = await api('/api/help-image');
+    const img = document.getElementById('helpImgPreview');
+    const meta = document.getElementById('helpImgMeta');
+    if (!d.exists) {
+      img.removeAttribute('src');
+      meta.innerHTML = '尚未设置帮助图片 —— 此时 <code>.help</code> 会回复纯文字指令表。';
+      document.getElementById('helpImgReset').disabled = !d.hasDefault;
+      return;
+    }
+    img.src = d.url;
+    const cur = d.isDefault
+      ? '<span class="badge-cur">当前为默认图</span>'
+      : '<span class="badge-cur">当前为自定义图</span>';
+    meta.innerHTML = `${cur}<br>尺寸：${d.width} × ${d.height} px<br>`
+      + `大小：${fmtSize(d.size)}<br>更新时间：${fmtTime(d.mtime)}`;
+    document.getElementById('helpImgReset').disabled = !d.hasDefault || d.isDefault;
+    document.getElementById('helpImgDownload').href = d.url;
+  } catch (e) {
+    helpMsg('读取失败：' + e.message, 'err');
+  }
+}
+
+/** 上传新图（读成 dataURL 后 POST，不用 multipart） */
+document.getElementById('helpImgFile').addEventListener('change', function () {
+  const file = this.files && this.files[0];
+  if (!file) return;
+  if (file.type !== 'image/png') {
+    helpMsg('请选择 PNG 格式的图片（当前是 ' + (file.type || '未知') + '）', 'err');
+    this.value = '';
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    helpMsg('图片超过 8MB，请压缩后再上传', 'err');
+    this.value = '';
+    return;
+  }
+  helpMsg('正在上传…');
+  const reader = new FileReader();
+  const input = this;
+  reader.onload = async () => {
+    try {
+      const d = await api('/api/help-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dataUrl: reader.result }),
+      });
+      helpMsg(`上传成功！新图 ${d.width}×${d.height}，群里发 .help 即可看到`, 'ok');
+      loadHelpImage();
+    } catch (e) {
+      helpMsg('上传失败：' + e.message, 'err');
+    }
+    input.value = '';
+  };
+  reader.onerror = () => { helpMsg('读取文件失败', 'err'); input.value = ''; };
+  reader.readAsDataURL(file);
+});
+
+/** 恢复默认图 */
+async function resetHelpImage() {
+  if (!confirm('确定恢复为默认的指令图吗？当前自定义图片会被覆盖。')) return;
+  try {
+    await api('/api/help-image/reset', { method: 'POST' });
+    helpMsg('已恢复默认图', 'ok');
+    loadHelpImage();
+  } catch (e) {
+    helpMsg('恢复失败：' + e.message, 'err');
+  }
+}
+
+// ---------- 概览 ----------
+async function loadStatus() {
+  try {
+    const d = await api('/api/status');
+    document.getElementById('statusPills').innerHTML = d.platforms.length
+      ? d.platforms.map(p => `<span class="pill ${p.online?'on':'off'}">${p.platform.toUpperCase()} ${p.online?'在线':'离线'}</span>`).join('')
+      : '<span class="pill off">无平台启用</span>';
+    const cards = [
+      { label: '总掷骰次数', value: d.stats.totalLogs },
+      { label: '活跃群数', value: d.stats.totalGroups },
+      { label: '参与用户', value: d.stats.totalUsers },
+      { label: 'QQ / KOOK', value: (d.stats.byPlatform.qq||0) + ' / ' + (d.stats.byPlatform.kook||0), small: true },
+      { label: '最近备份', value: d.lastBackup ? fmtTime(d.lastBackup) : '暂无', small: true },
+      { label: '运行时长', value: Math.floor(d.uptime/3600) + ' 小时 ' + Math.floor((d.uptime%3600)/60) + ' 分', small: true },
+    ];
+    document.getElementById('statCards').innerHTML = cards.map(c =>
+      `<div class="card"><div class="label">${c.label}</div><div class="value ${c.small?'small':''}">${esc(c.value)}</div></div>`
+    ).join('');
+  } catch (e) {
+    document.getElementById('statusPills').innerHTML = '<span class="pill off">连接失败</span>';
+  }
+}
+
+// ---------- 日志 ----------
+let logOffset = 0, logLimit = 50, logTotal = 0;
+async function loadLogs(offset) {
+  if (offset !== undefined) logOffset = offset;
+  const platform = document.getElementById('logPlatform').value;
+  const keyword = document.getElementById('logKeyword').value;
+  const q = '/api/logs?limit=' + logLimit + '&offset=' + logOffset
+    + (platform ? '&platform=' + platform : '')
+    + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '');
+  try {
+    const d = await api(q);
+    logTotal = d.total;
+    document.getElementById('logCount').textContent = '共 ' + d.total + ' 条';
+    document.getElementById('logPage').textContent =
+      '第 ' + (Math.floor(logOffset/logLimit)+1) + ' / ' + Math.max(1, Math.ceil(logTotal/logLimit)) + ' 页';
+    document.getElementById('logBody').innerHTML = d.items.length ? d.items.map(it =>
+      `<tr>
+        <td>${fmtTime(it.createdAt)}</td>
+        <td><span class="tag ${it.platform}">${it.platform.toUpperCase()}</span></td>
+        <td>${esc(it.groupName || it.groupId)}</td>
+        <td>${esc(it.userName || it.userId)}</td>
+        <td class="mono">${esc(it.expression)}</td>
+        <td><b>${it.total}</b></td>
+        <td style="color:var(--muted)">${esc(it.detail)}</td>
+      </tr>`).join('') : '<tr><td colspan="7" class="empty">暂无记录</td></tr>';
+  } catch (e) {
+    document.getElementById('logBody').innerHTML = '<tr><td colspan="7" class="empty">加载失败：' + esc(e.message) + '</td></tr>';
+  }
+}
+function prevLogs() { if (logOffset > 0) loadLogs(Math.max(0, logOffset - logLimit)); }
+function nextLogs() { if (logOffset + logLimit < logTotal) loadLogs(logOffset + logLimit); }
+
+// ---------- 角色卡 ----------
+async function loadSheets() {
+  const platform = document.getElementById('sheetPlatform').value;
+  try {
+    const d = await api('/api/sheets' + (platform ? '?platform=' + platform : ''));
+    document.getElementById('sheetBody').innerHTML = d.items.length ? d.items.map(s =>
+      `<tr>
+        <td>${fmtTime(s.updatedAt)}</td>
+        <td><span class="tag ${s.platform}">${s.platform.toUpperCase()}</span></td>
+        <td>${esc(s.userName || s.userId)}</td>
+        <td>${esc(s.system)}</td>
+        <td style="color:var(--muted)">${esc(s.summary)}</td>
+        <td><button class="btn danger" onclick="delSheet(${s.id})">删除</button></td>
+      </tr>`).join('') : '<tr><td colspan="6" class="empty">暂无角色卡</td></tr>';
+  } catch (e) {
+    document.getElementById('sheetBody').innerHTML = '<tr><td colspan="6" class="empty">加载失败</td></tr>';
+  }
+}
+async function delSheet(id) {
+  if (!confirm('确定删除这张角色卡？')) return;
+  await api('/api/sheets/' + id, { method: 'DELETE' });
+  loadSheets();
+}
+
+// ---------- 群配置 ----------
+async function loadSettings() {
+  const platform = document.getElementById('setPlatform').value;
+  const groupId = document.getElementById('setGroupId').value;
+  if (!groupId) return alert('请先填写群/频道 ID');
+  try {
+    const d = await api('/api/settings?platform=' + platform + '&groupId=' + encodeURIComponent(groupId));
+    document.getElementById('settingBody').innerHTML = d.items.length ? d.items.map(it =>
+      `<tr><td class="mono">${esc(it.key)}</td><td>${esc(it.value)}</td></tr>`).join('')
+      : '<tr><td colspan="2" class="empty">该群暂无自定义配置（使用默认值）</td></tr>';
+  } catch (e) { /* ignore */ }
+}
+async function saveSetting() {
+  const platform = document.getElementById('setPlatform').value;
+  const groupId = document.getElementById('setGroupId').value;
+  const key = document.getElementById('setKey').value;
+  const value = document.getElementById('setValue').value;
+  if (!groupId || !key) return alert('请填写群 ID 与配置键');
+  await api('/api/settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ platform, groupId, key, value }),
+  });
+  loadSettings();
+}
+
+// ---------- 备份 ----------
+async function loadBackups() {
+  try {
+    const d = await api('/api/backups');
+    document.getElementById('backupBody').innerHTML = d.items.length ? d.items.map(b =>
+      `<tr>
+        <td class="mono">${esc(b.name)}</td>
+        <td>${fmtSize(b.size)}</td>
+        <td>${fmtTime(b.mtime)}</td>
+        <td><a class="btn" href="/api/backups/download/${encodeURIComponent(b.name)}${TOKEN?'?token='+TOKEN:''}">下载</a></td>
+      </tr>`).join('') : '<tr><td colspan="4" class="empty">暂无备份</td></tr>';
+  } catch (e) { /* ignore */ }
+}
+async function doBackup() {
+  await api('/api/backups', { method: 'POST' });
+  loadBackups();
+  loadStatus();
+}
+
+// ---------- 初始化 ----------
+loadStatus();
+loadLogs(0);
+setInterval(loadStatus, 15000);
+</script>
+</body>
+</html>

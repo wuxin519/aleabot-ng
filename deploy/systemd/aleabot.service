@@ -1,0 +1,26 @@
+[Unit]
+Description=AleaBot NG - TRPG Dice Bot (QQ OneBot + KOOK)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=<运行用户>
+WorkingDirectory=<安装目录>
+EnvironmentFile=-<安装目录>/.env
+ExecStart=<node路径> <安装目录>/dist/index.js
+Restart=always
+RestartSec=5
+# 优雅退出，给备份留时间
+KillSignal=SIGTERM
+TimeoutStopSec=20
+
+StandardOutput=append:<安装目录>/logs/bot.log
+StandardError=append:<安装目录>/logs/bot.err.log
+
+# 安全加固
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

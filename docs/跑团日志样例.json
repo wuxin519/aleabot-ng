@@ -1,0 +1,154 @@
+{
+ "version": 1,
+ "name": "调查员之夜",
+ "platform": "qq",
+ "groupId": "123456789",
+ "createdBy": "10001",
+ "createdAt": 1790947056300,
+ "endedAt": 1790947056314,
+ "items": [
+  {
+   "id": 1,
+   "nickname": "木落",
+   "IMUserId": "10001",
+   "time": 1790947056,
+   "message": "我们到了那栋老房子门口。",
+   "isDice": false,
+   "commandId": -1,
+   "role": "角色",
+   "kind": "chat"
+  },
+  {
+   "id": 2,
+   "nickname": "木落",
+   "IMUserId": "10001",
+   "time": 1790947056,
+   "message": ".r 1d100",
+   "isDice": false,
+   "commandId": -1,
+   "role": "角色",
+   "kind": "command"
+  },
+  {
+   "id": 3,
+   "nickname": "骰子",
+   "IMUserId": "bot",
+   "time": 1790947056,
+   "message": "🎲 【木落】1d100 = 10\n1d100[10] = 10",
+   "isDice": true,
+   "commandId": -1,
+   "role": "骰子",
+   "kind": "dice"
+  },
+  {
+   "id": 4,
+   "nickname": "阿雾",
+   "IMUserId": "10002",
+   "time": 1790947056,
+   "message": "【旁白】夜色沉沉，雨点打在铁门上。",
+   "isDice": false,
+   "commandId": -1,
+   "role": "角色",
+   "kind": "ooc"
+  },
+  {
+   "id": 5,
+   "nickname": "阿雾",
+   "IMUserId": "10002",
+   "time": 1790947056,
+   "message": ".ra 侦查 60",
+   "isDice": false,
+   "commandId": -1,
+   "role": "角色",
+   "kind": "command"
+  },
+  {
+   "id": 6,
+   "nickname": "骰子",
+   "IMUserId": "bot",
+   "time": 1790947056,
+   "message": "❌ 【阿雾】侦查检定: 1d100 = 75 / 60 → 失败",
+   "isDice": true,
+   "commandId": -1,
+   "role": "骰子",
+   "kind": "dice"
+  },
+  {
+   "id": 7,
+   "nickname": "木落",
+   "IMUserId": "10001",
+   "time": 1790947056,
+   "message": "@阿雾 你帮我照一下[图]",
+   "isDice": false,
+   "commandId": -1,
+   "role": "角色",
+   "kind": "chat"
+  },
+  {
+   "id": 8,
+   "nickname": "阿雾",
+   "IMUserId": "10002",
+   "time": 1790947056,
+   "message": "（我先去倒杯水，等我一下）",
+   "isDice": false,
+   "commandId": -1,
+   "role": "角色",
+   "kind": "ooc"
+  },
+  {
+   "id": 9,
+   "nickname": "言",
+   "IMUserId": "10003",
+   "time": 1790947056,
+   "message": "啧，这房子不对劲。",
+   "isDice": false,
+   "commandId": -1,
+   "role": "角色",
+   "kind": "chat"
+  },
+  {
+   "id": 10,
+   "nickname": "ob言",
+   "IMUserId": "10003",
+   "time": 1790947056,
+   "message": "（我只是路过看看）",
+   "isDice": false,
+   "commandId": -1,
+   "role": "隐藏",
+   "kind": "ooc"
+  },
+  {
+   "id": 11,
+   "nickname": "木落",
+   "IMUserId": "10001",
+   "time": 1790947056,
+   "message": "继续，我踹门。",
+   "isDice": false,
+   "commandId": -1,
+   "role": "角色",
+   "kind": "chat"
+  },
+  {
+   "id": 12,
+   "nickname": "木落",
+   "IMUserId": "10001",
+   "time": 1790947056,
+   "message": ".r 1d20+3",
+   "isDice": false,
+   "commandId": -1,
+   "role": "角色",
+   "kind": "command"
+  },
+  {
+   "id": 13,
+   "nickname": "骰子",
+   "IMUserId": "bot",
+   "time": 1790947056,
+   "message": "🎲 【木落】1d20+3 = 14\n1d20[11] +3 = 14",
+   "isDice": true,
+   "commandId": -1,
+   "role": "骰子",
+   "kind": "dice"
+  }
+ ]
+}

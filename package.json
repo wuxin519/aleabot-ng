@@ -1,0 +1,46 @@
+{
+  "name": "aleabot-ng",
+  "version": "1.0.0",
+  "description": "AleaBot NG - 多平台 TRPG 跑团骰子机器人（QQ OneBot + KOOK），含网页管理后台与数据备份",
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "node --test tests/core.test.js",
+    "test:batch1": "node --test tests/batch1.test.js",
+    "test:log": "node --test tests/log.test.js",
+    "smoke": "node tests/smoke.js",
+    "test:help": "node tests/help-image.js",
+    "test:api": "node tests/help-image-api.js",
+    "test:all": "node --test tests/core.test.js tests/batch1.test.js tests/log.test.js && node tests/smoke.js && node tests/help-image.js && node tests/help-image-api.js"
+  },
+  "keywords": [
+    "trpg",
+    "dice",
+    "bot",
+    "qq",
+    "onebot",
+    "kook",
+    "coc",
+    "dnd"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.5.0",
+    "@types/ws": "^8.5.12",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

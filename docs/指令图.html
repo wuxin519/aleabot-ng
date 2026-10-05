@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="HgO6mNpYx1g3cTS94Ic4gb"><head data-page-node-id="yi89DMXWCF8GSiJw6XGrGv">
+<meta charset="UTF-8" data-page-node-id="A687jzBG3UhGLeQE89SbNc">
+<style data-page-node-id="HGxwsKTMEq9js7mEEyrt3K">
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 1080px;
+    /* 高度不写死：由内容撑开，截图时按实际高度裁剪，底部不留空白 */
+    overflow: hidden;
+    background: #ffffff;
+    font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+  }
+
+  .page {
+    width: 1080px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 52px 20px 52px;
+  }
+
+  /* ==================== 顶部标题条 ==================== */
+  .hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 172px;
+    margin-bottom: 8px;
+    /* 给立绘留出上探空间（头顶超出文字） */
+    padding-top: 8px;
+  }
+
+  .hero-line {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .hero-text {
+    font-family: "SimHei", "黑体", "Microsoft YaHei", sans-serif;
+    font-size: 72px;
+    font-weight: 900;
+    color: #8b1010;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-shadow: 3px 3px 0 rgba(139, 16, 16, 0.13);
+    white-space: nowrap;
+  }
+
+  /* 真实立绘（已抠图，透明背景，宽高比 1.668） */
+  .naruhodo {
+    width: 268px;
+    height: 161px;
+    object-fit: contain;
+    object-position: bottom;
+    margin: 0 2px 0 10px;
+    flex: 0 0 auto;
+    align-self: flex-end;
+  }
+
+  .rule {
+    width: 26px;
+    height: 5px;
+    background: #8b1010;
+    border-radius: 4px;
+    margin-bottom: 21px;
+  }
+  .rule.l { margin-right: 10px; }
+  .rule.r { margin-left: 10px; }
+
+  /* 标题下方分隔线 */
+  .divider {
+    height: 3px;
+    background: linear-gradient(to right,
+      rgba(139,16,16,0) 0%,
+      rgba(139,16,16,0.30) 22%,
+      rgba(139,16,16,0.30) 78%,
+      rgba(139,16,16,0) 100%);
+    margin-bottom: 18px;
+  }
+
+  /* ==================== 指令区 ==================== */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    row-gap: 8px;
+    justify-content: flex-start;
+  }
+
+  .item {
+    display: inline-flex;
+    align-items: baseline;
+    white-space: nowrap;
+  }
+
+  /* 分隔符挂在 item 尾部，保证不会单独换行成为孤立的 "/" */
+  .item:not(:last-child)::after {
+    content: "/";
+    font-size: 22px;
+    color: #c4c4c4;
+    font-weight: 400;
+    margin: 0 14px;
+  }
+
+  .fn {
+    font-size: 22px;
+    color: #1a1a1a;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .sp { display: inline-block; width: 8px; }
+
+  .cmd {
+    font-size: 22px;
+    color: #0b5394;
+    font-weight: 700;
+    font-family: "Consolas", "Microsoft YaHei", monospace;
+  }
+
+  .sep { display: none; }
+
+  /* 去掉行的「弹性间隔」：不再拉伸填满高度，改由 .page 整体自适应 */
+  .gap { display: none; }
+
+  /* ==================== 底部 ==================== */
+  .footer {
+    /* 不用 margin-top:auto —— 那会撑高页面留下空白，改为固定上边距 */
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding-top: 14px;
+    border-top: 3px solid #ececec;
+  }
+
+  .footer .v { font-size: 21px; color: #555; }
+  .footer .k {
+    font-size: 21px;
+    color: #0b5394;
+    font-weight: 700;
+    font-family: "Consolas", monospace;
+  }
+
+  .admin-tag {
+    font-size: 18px;
+    color: #999;
+    border: 2px solid #d8d8d8;
+    border-radius: 6px;
+    padding: 2px 8px 3px 8px;
+    align-self: center;
+    margin-left: 10px;
+  }
+</style>
+<script>
+  /* 把页面真实内容高度写到标题上，供截图脚本读取后按需裁剪（去掉底部空白）。
+     用 rAF 等布局完成后再测，避免读到中间态。 */
+  window.addEventListener('load', function () {
+    requestAnimationFrame(function () {
+      var pg = document.querySelector('.page');
+      if (!pg) return;
+      var h = Math.ceil(pg.getBoundingClientRect().height);
+      document.title = 'H:' + h;
+      document.documentElement.setAttribute('data-content-height', String(h));
+    });
+  });
+</script>
+<style id="__dm_no_drag_style__">* { -webkit-user-drag: none !important; }</style><style id="__dm_bindable_badge_style__">[data-sp-bindable="database"]{outline:1px dashed #0088ff;outline-offset:2px;border-radius:4px;}[data-sp-bindable="database"] *{pointer-events:none !important;transition:none !important;animation:none !important;}[data-sp-bindable="database"]{transition:none !important;animation:none !important;}</style></head>
+<body data-page-node-id="BVQ4t7hg7UAd5A25crsnwj" style="position: relative;">
+<div class="page" data-page-node-id="jLnxXVljKBVyPgeBJfhKNw">
+
+  <!-- ==================== 顶部：骰娘指令 + 成步堂 + 一览 ==================== -->
+  <div class="hero" data-page-node-id="ORkrrk10jD0zgRaevrhZks">
+    <div class="hero-line" data-page-node-id="THAi8dJurRM8LcGVFU7oV1">
+      <span class="rule l" data-page-node-id="EWy3ix22hLm4aXlu48syHg"></span>
+      <img class="naruhodo" src="成步堂-抠图.png?v=6" alt="" data-page-node-id="nB0ogNjxlXZ6YCJQLwDk4f">
+      <span class="hero-text" data-page-node-id="V1DAiLYUkAIK7WqlaEzphm" style="">指令一览​</span>
+      <span class="rule r" data-page-node-id="1XEOBxMZcB5LUzaCA33M9w"></span>
+    </div>
+  </div>
+
+  <div class="divider" data-page-node-id="PtVGXD4F2VP0wBlwqo8NDi"></div>
+
+  <!-- ==================== 掷骰（行1） ==================== -->
+  <div class="row" data-page-node-id="PycQgl1QvIoBXKHAprj1xU">
+    <span class="item" data-page-node-id="7jeCvgnCLA3FJKRZ4TTlKK"><span class="fn" data-page-node-id="z5e4GABhr867UBPMol7j3N">掷骰</span><span class="sp" data-page-node-id="U4NOHeIlt5pxE1cQVZfGg6"></span><span class="cmd" data-page-node-id="40jN2c4N7zNu48qoa0sXM6">.r</span></span>
+    <span class="item" data-page-node-id="zRGDvRNEIC9IdS68yy7tzX"><span class="fn" data-page-node-id="8BDg4TShQxXqHdAEHkQt28">默认骰</span><span class="sp" data-page-node-id="DL9N6z1efYMhPWRoDqetEM"></span><span class="cmd" data-page-node-id="wJwLMh2AaYSIBYJRzHDkXP">.r</span></span>
+    <span class="item" data-page-node-id="l4DvXOqzJC8PuDQD7udwYL"><span class="fn" data-page-node-id="UU1S6gfP7egKrI9ysMOLSn">带加值</span><span class="sp" data-page-node-id="OmYJWDN8gjKVR8vAy2aycK"></span><span class="cmd" data-page-node-id="004JSgh1eWG8o9babFIu1T">.r 3d6+2</span></span>
+    <span class="item" data-page-node-id="I33a3Y0hrZg8KOCCJQQXHA"><span class="fn" data-page-node-id="Cgzp5s16eb6Dhv59opRKGi">取高</span><span class="sp" data-page-node-id="kCDXcWQwKYA3qB6IEAVEAJ"></span><span class="cmd" data-page-node-id="qxJft7nYtrsRejqqCAEWHg">.r 4d6k3</span></span>
+  </div>
+
+  <div class="gap" data-page-node-id="FjzTQ9a8JE3bW2GA4cU4kv"></div>
+
+  <!-- ==================== 掷骰（行2） ==================== -->
+  <div class="row" data-page-node-id="DnZH9S0C2a1uLPnrflxQ4F">
+    <span class="item" data-page-node-id="5eB1CJBETWfDn64GaOD9uJ"><span class="fn" data-page-node-id="ujWDK5ZgqBD6mraQkiH0wF">优势</span><span class="sp" data-page-node-id="Nn4Jp1KLdr4RQfIB5I4OkQ"></span><span class="cmd" data-page-node-id="7sD6QpLXnFZvQSAxEJargw">.r 2d20kh1</span></span>
+    <span class="item" data-page-node-id="6EqUyIA0T5Dlve8j0Q4jbi"><span class="fn" data-page-node-id="6Ws8rT2voqyq7qP6NcbSsF">劣势</span><span class="sp" data-page-node-id="X8WmazFWZ11jOyjL5kCwtF"></span><span class="cmd" data-page-node-id="FiQKDiShPWdCHbZCbBOoNX">.r 2d20kl1</span></span>
+    <span class="item" data-page-node-id="c5sQUEYzVmGoBmq9acvahA"><span class="fn" data-page-node-id="We8H3TbLiOvKk1HkXe3mik">带目标掷骰</span><span class="sp" data-page-node-id="4QXAe4ayZPkmYux9YCtQxi"></span><span class="cmd" data-page-node-id="jPdWY7y3gHZghQRn0jxSq4">.r 1d100&lt;=60</span></span>
+  </div>
+
+  <!-- ==================== 掷骰进阶（v1.2 新增） ==================== -->
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">紧贴写法</span><span class="sp"></span><span class="cmd">.r3d100</span></span>
+    <span class="item"><span class="fn">紧贴多轮</span><span class="sp"></span><span class="cmd">.r3#2d50</span></span>
+    <span class="item"><span class="fn">多轮掷骰</span><span class="sp"></span><span class="cmd">.r 3#2d50</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">省略面数</span><span class="sp"></span><span class="cmd">.r d / .r 2d</span></span>
+    <span class="item"><span class="fn">中文优势</span><span class="sp"></span><span class="cmd">.r d20优势</span></span>
+    <span class="item"><span class="fn">中文劣势</span><span class="sp"></span><span class="cmd">.r d劣势</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">Fate 骰</span><span class="sp"></span><span class="cmd">.r f</span></span>
+    <span class="item"><span class="fn">WoD 骰</span><span class="sp"></span><span class="cmd">.r 5a6</span></span>
+    <span class="item"><span class="fn">双十字</span><span class="sp"></span><span class="cmd">.r 4c3</span></span>
+    <span class="item"><span class="fn">奖励骰</span><span class="sp"></span><span class="cmd">.r b3</span></span>
+    <span class="item"><span class="fn">暗骰</span><span class="sp"></span><span class="cmd">.rh 1d20</span></span>
+  </div>
+
+  <!-- ==================== 检定 ==================== -->
+  <div class="gap" data-page-node-id="6UijcPOXlLLunkmcARljmH"></div>
+
+  <div class="row" data-page-node-id="yagBG59a7ecJass757fPd8">
+    <span class="item" data-page-node-id="WYlortGLEBqpIr615oDOcn"><span class="fn" data-page-node-id="2cJEaW34mtB6xnOAvcPLFZ">技能检定</span><span class="sp" data-page-node-id="AH4nrPE6A3hBTOsEve0Ku8"></span><span class="cmd" data-page-node-id="q7rkWXyEt2DreAqzjkg49A">.ra 侦查 60</span></span>
+    <span class="item" data-page-node-id="PWm3D9NtJJb7xUDgW9uLU1"><span class="fn" data-page-node-id="ZYrOy4KGXiZvIgNH1FZGm2">读卡检定</span><span class="sp" data-page-node-id="NsgFHzaqRyODopBQN1nDib"></span><span class="cmd" data-page-node-id="sWlg8T1cMuAPTBIQxcjOro">.ra 侦查</span></span>
+    <span class="item" data-page-node-id="pm10jtFGh3zSZsTbZuCGGY"><span class="fn" data-page-node-id="0odEFKF4V7doFgXrDhAFWC">直接检定</span><span class="sp" data-page-node-id="HHl6DGTiLPBct65Tl1XrvE"></span><span class="cmd" data-page-node-id="u2kE18d8YI4NJ8Tl8UV84y">.ra 60</span></span>
+  </div>
+
+  <div class="gap" data-page-node-id="MgwJuez9hZ4O5cE0OGqfia"></div>
+
+  <!-- ==================== 检定进阶（v1.2 新增） ==================== -->
+  <div class="row">
+    <span class="item"><span class="fn">多列检定</span><span class="sp"></span><span class="cmd">.ra 3#p手枪</span></span>
+    <span class="item"><span class="fn">奖励骰</span><span class="sp"></span><span class="cmd">.rb 侦查 60</span></span>
+    <span class="item"><span class="fn">惩罚骰</span><span class="sp"></span><span class="cmd">.rp 侦查 60</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">对抗检定</span><span class="sp"></span><span class="cmd">.rav @对手 侦查</span></span>
+    <span class="item"><span class="fn">理智检定</span><span class="sp"></span><span class="cmd">.sc 60 1/1d6</span></span>
+    <span class="item"><span class="fn">房规切换</span><span class="sp"></span><span class="cmd">.setcoc 2</span></span>
+  </div>
+
+  <div class="gap" data-page-node-id="Z5vGUiSYFEXzhGxhbeN2NF"></div>
+
+  <!-- ==================== 成长与疯狂（新增） ==================== -->
+  <div class="row">
+    <span class="item"><span class="fn">成长检定</span><span class="sp"></span><span class="cmd">.en 侦查</span></span>
+    <span class="item"><span class="fn">临时疯狂</span><span class="sp"></span><span class="cmd">.ti</span></span>
+    <span class="item"><span class="fn">长期疯狂</span><span class="sp"></span><span class="cmd">.li</span></span>
+  </div>
+
+  <!-- ==================== 检定增强（v1.4 新增） ==================== -->
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">属性调整</span><span class="sp"></span><span class="cmd">.ra 侦查+10 / -5</span></span>
+    <span class="item"><span class="fn">难度前缀</span><span class="sp"></span><span class="cmd">.ra 困难侦查 / 极难侦查</span></span>
+    <span class="item"><span class="fn">规则书检定</span><span class="sp"></span><span class="cmd">.rc 侦查</span></span>
+  </div>
+
+  <div class="row">
+    <span class="item"><span class="fn">多技能成长</span><span class="sp"></span><span class="cmd">.en 侦查 聆听</span></span>
+    <span class="item"><span class="fn">自定义成长</span><span class="sp"></span><span class="cmd">.en 侦查 +0/1d6</span></span>
+    <span class="item"><span class="fn">SAN 损失上限</span><span class="sp"></span><span class="cmd">.sc 1/1d6 --cap=3 --half</span></span>
+  </div>
+
+  <div class="row">
+    <span class="item"><span class="fn">房规全表</span><span class="sp"></span><span class="cmd">.setcoc details</span></span>
+    <span class="item"><span class="fn">房规 0-5/dg</span><span class="sp"></span><span class="cmd">.setcoc dg</span></span>
+  </div>
+
+  <!-- ==================== 角色卡 ==================== -->
+  <div class="gap"></div>
+
+  <div class="row" data-page-node-id="R0qtVXoxF0xW9ftCZ0fMoj">
+    <span class="item" data-page-node-id="RCU9jg3jUkxsXQq4GnWwEF"><span class="fn" data-page-node-id="wfF4LZWJEzjQxotGGIwW5n">COC 7版卡</span><span class="sp" data-page-node-id="wOWrV15vqLxeKdGhA5r5jU"></span><span class="cmd" data-page-node-id="OzMfvDe0wKwEgm6qszUxCc">.coc</span></span>
+    <span class="item"><span class="fn">COC 5版卡</span><span class="sp"></span><span class="cmd">.coc5</span></span>
+    <span class="item" data-page-node-id="zuu293wzwuQXjIdEZx6zFN"><span class="fn" data-page-node-id="yMds03J7OuxePLs4BOofZm">DND 5e卡</span><span class="sp" data-page-node-id="rqDMK5pnGr21af8dDP2vM0"></span><span class="cmd" data-page-node-id="1rdLNuUDODhcmHC0QnyUMq">.dnd</span></span>
+    <span class="item" data-page-node-id="puRpbZ7YGBQRlhWjalEuTG"><span class="fn" data-page-node-id="OClMZesq47Jz9kOI0CDUg3">查看全卡</span><span class="sp" data-page-node-id="XdsBHRKkq9KuTPzeGqfspO"></span><span class="cmd" data-page-node-id="fWBjgXpbYsClPTsnpwg40F">.st show</span></span>
+  </div>
+
+  <div class="gap" data-page-node-id="67kQ9qjGGPFAaUYOFLtVxN"></div>
+
+  <div class="row" data-page-node-id="EjSyWVuNDN3nGD9PS5l3Hd">
+    <span class="item" data-page-node-id="RLnM0ZhEo4ld71QBZpahcR"><span class="fn" data-page-node-id="hIqb62SLrB6sgyTqxyaUND">改属性</span><span class="sp" data-page-node-id="xtYSHGBCBofuKkGofnDJ4R"></span><span class="cmd" data-page-node-id="IAeY0BAgkCx1GV4cshBME5">.st 力量 88</span></span>
+    <span class="item" data-page-node-id="yTV01qtOFYvQxkbf17oed9"><span class="fn" data-page-node-id="PsyXC7IpfW7fuCA60oiwE0">查属性</span><span class="sp" data-page-node-id="Q7Yc8tp6nuLSsgfqayPoBm"></span><span class="cmd" data-page-node-id="oYcFfTViZfMbGL5iA8K8Rp">.st 力量</span></span>
+    <span class="item" data-page-node-id="ccI0UAZIzXWEnzQUyM2jbT"><span class="fn" data-page-node-id="eMiwrtPt1RAgT7YcGikuyQ">设置技能</span><span class="sp" data-page-node-id="DgaGCFariVac9WxdRrokG4"></span><span class="cmd" data-page-node-id="m6OxUlYjuGCHEXOzNchatX">.st 侦查 70</span></span>
+  </div>
+
+  <!-- ==================== 批量制卡（v1.4 新增） ==================== -->
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">掷 5 组主属性</span><span class="sp"></span><span class="cmd">.coc 5 / .coc5 5</span></span>
+    <span class="item"><span class="fn">DND 掷 4 组</span><span class="sp"></span><span class="cmd">.dnd 4</span></span>
+  </div>
+
+  <div class="row">
+    <span class="item"><span class="fn">只出主属性</span><span class="sp"></span><span class="cmd">技能衍生值需自定</span></span>
+    <span class="item"><span class="fn">含 HP 与总值</span><span class="sp"></span><span class="cmd">最多 20 组</span></span>
+  </div>
+
+  <!-- ==================== HP / SAN 快捷（v1.2 新增） ==================== -->
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">属性连写</span><span class="sp"></span><span class="cmd">.st 力量88</span></span>
+    <span class="item"><span class="fn">HP 加值</span><span class="sp"></span><span class="cmd">.hp+3</span></span>
+    <span class="item"><span class="fn">HP 扣减</span><span class="sp"></span><span class="cmd">.hp-1d4</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">角色卡名字/昵称</span><span class="sp"></span><span class="cmd">.st name 张三 / .sn 张三</span></span>
+    <span class="item"><span class="fn">HP 设值</span><span class="sp"></span><span class="cmd">.hp 50</span></span>
+    <span class="item"><span class="fn">SAN 增减</span><span class="sp"></span><span class="cmd">.san-1d4</span></span>
+  </div>
+
+  <!-- ==================== 角色卡：批量录入 ==================== -->
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">批量录入(空格)</span><span class="sp"></span><span class="cmd">.st 力量88 体质70 敏捷60</span></span>
+    <span class="item"><span class="fn">批量录入(免空格)</span><span class="sp"></span><span class="cmd">.st力量88体质70敏捷60</span></span>
+  </div>
+
+  <div class="row">
+    <span class="item"><span class="fn">按顺序录入</span><span class="sp"></span><span class="cmd">.st 50 60 70 55 65 75 80 90 50</span></span>
+    <span class="item"><span class="fn">新建角色卡</span><span class="sp"></span><span class="cmd">.st new 调查员A</span></span>
+  </div>
+
+  <div class="row">
+    <span class="item"><span class="fn">位置含义(同 .st show)</span><span class="sp"></span><span class="cmd">力/体/敏/貌/意/型/智/教/运</span></span>
+    <span class="item"><span class="fn">角色卡列表</span><span class="sp"></span><span class="cmd">.st list</span></span>
+  </div>
+
+  <div class="row">
+    <span class="item"><span class="fn">切换(名字或编号)</span><span class="sp"></span><span class="cmd">.st switch 调查员A / 2</span></span>
+    <span class="item"><span class="fn">删除角色卡</span><span class="sp"></span><span class="cmd">.pc del 调查员A</span></span>
+  </div>
+
+  <!-- ==================== 属性管理（v1.4 新增） ==================== -->
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">查单项属性</span><span class="sp"></span><span class="cmd">.st show 侦查</span></span>
+    <span class="item"><span class="fn">删指定属性</span><span class="sp"></span><span class="cmd">.st del 幸运 魔法</span></span>
+    <span class="item"><span class="fn">清空所有属性</span><span class="sp"></span><span class="cmd">.st clr</span></span>
+  </div>
+
+  <div class="row">
+    <span class="item"><span class="fn">导出属性</span><span class="sp"></span><span class="cmd">.st export</span></span>
+    <span class="item"><span class="fn">保存表达式</span><span class="sp"></span><span class="cmd">.st &amp;手枪伤害=1d6+1</span></span>
+    <span class="item"><span class="fn">调用表达式</span><span class="sp"></span><span class="cmd">.r 手枪伤害</span></span>
+  </div>
+
+  <div class="row">
+    <span class="item"><span class="fn">卡片管理</span><span class="sp"></span><span class="cmd">.pc new/tag/list/del/show</span></span>
+    <span class="item"><span class="fn">设定先攻值</span><span class="sp"></span><span class="cmd">.ri 15 / .ri +2</span></span>
+  </div>
+
+  <!-- ==================== 先攻 ==================== -->
+  <div class="gap" data-page-node-id="1fH6MmOF9OHLCcq1TWJm4q"></div>
+
+  <div class="row" data-page-node-id="jOnzR2aaYUI7JB4R0Za7eh">
+    <span class="item" data-page-node-id="JJ5puJnIRhPy5Eqfl27kXE"><span class="fn" data-page-node-id="JnWCoBO9TN5ZhDMTR4awOo">加入先攻</span><span class="sp" data-page-node-id="F7UvEqANUv1n9r0SXTqHse"></span><span class="cmd" data-page-node-id="ecUY7EhRFoEOlzXLnLfaay">.init add 张三 15</span></span>
+    <span class="item" data-page-node-id="3BcIk5z5VQqS7h6NbeiBTR"><span class="fn" data-page-node-id="nDjuWNpnQQSz604V7GyzeD">先攻顺序</span><span class="sp" data-page-node-id="i3zEZ3a7GU1rdSi5EM2PVQ"></span><span class="cmd" data-page-node-id="XlCWH01hDl0rAkhUzq64fW">.init list</span></span>
+    <span class="item" data-page-node-id="fyHAbI8I7cwyH5vPprHjP7"><span class="fn" data-page-node-id="ilkGrQ8KzksEPuvtbVb44C">清空</span><span class="sp" data-page-node-id="q99RXTkCH7iMugEYVXHGkN"></span><span class="cmd" data-page-node-id="X8GNVcel51RCGqG1W0PgVB">.init clr</span></span>
+  </div>
+
+  <!-- ==================== 跑团工具（新增） ==================== -->
+  <div class="gap" data-page-node-id="AiqKGKNEuiX76ffsNQOyHk"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">随机名字</span><span class="sp"></span><span class="cmd">.name cn 10</span></span>
+    <span class="item"><span class="fn">顺序重排</span><span class="sp"></span><span class="cmd">.who A B C</span></span>
+    <span class="item"><span class="fn">抽牌</span><span class="sp"></span><span class="cmd">.draw 塔罗 3</span></span>
+    <span class="item"><span class="fn">牌堆列表</span><span class="sp"></span><span class="cmd">.drawlist</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <!-- ==================== 统计与娱乐（新增） ==================== -->
+  <div class="row">
+    <span class="item"><span class="fn">掷骰统计</span><span class="sp"></span><span class="cmd">.stat</span></span>
+    <span class="item"><span class="fn">我的统计</span><span class="sp"></span><span class="cmd">.hiy</span></span>
+    <span class="item"><span class="fn">今日人品</span><span class="sp"></span><span class="cmd">.jrrp</span></span>
+    <span class="item"><span class="fn">咕咕</span><span class="sp"></span><span class="cmd">.gugu</span></span>
+    <span class="item"><span class="fn">抛硬币</span><span class="sp"></span><span class="cmd">.coin</span></span>
+  </div>
+
+  <!-- ==================== 跑团日志（新增） ==================== -->
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">新建日志</span><span class="sp"></span><span class="cmd">.log new [名称]</span></span>
+    <span class="item"><span class="fn">暂停继续</span><span class="sp"></span><span class="cmd">.log off / on</span></span>
+    <span class="item"><span class="fn">结束并导出</span><span class="sp"></span><span class="cmd">.log end json</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">日志列表</span><span class="sp"></span><span class="cmd">.log list</span></span>
+    <span class="item"><span class="fn">日志统计</span><span class="sp"></span><span class="cmd">.log stat</span></span>
+    <span class="item"><span class="fn">删除日志</span><span class="sp"></span><span class="cmd">.log del &lt;id&gt;</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">导出文件</span><span class="sp"></span><span class="cmd">.log get json</span></span>
+    <span class="item"><span class="fn">观众模式</span><span class="sp"></span><span class="cmd">.ob</span></span>
+  </div>
+
+  <!-- ==================== 查询与帮助 ==================== -->
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item" data-page-node-id="9885mU6YumueLEz3cD0CIw"><span class="fn" data-page-node-id="xOX51YBBzLwalvP5bnjeNG">指令图</span><span class="sp" data-page-node-id="eRMl4SOLGFnbah9kJVLrYj"></span><span class="cmd" data-page-node-id="HefIEkIfNeBOBAyf2R7NWg">.help</span></span>
+    <span class="item"><span class="fn">查询规则</span><span class="sp"></span><span class="cmd">.help 成功等级</span></span>
+    <span class="item"><span class="fn">规则速查</span><span class="sp"></span><span class="cmd">.rule</span></span>
+  </div>
+
+  <!-- ==================== 管理员 ==================== -->
+  <div class="gap"></div>
+
+  <div class="row" data-page-node-id="TFiZmTiMd2QQ8P68QxFJAb">
+    <span class="item" data-page-node-id="V73m3g6oyTIu3p67yCAZnH"><span class="fn" data-page-node-id="FfhFz2zJHecbHZbd7dsfv0">改前缀</span><span class="sp" data-page-node-id="plcWLrltwb5fmjTuZFEFCE"></span><span class="cmd" data-page-node-id="WYeLvSUPArC1MEwV7a5EAb">.set prefix !</span></span>
+    <span class="item" data-page-node-id="6yckFHxm1twtcJHcJ0BgVK"><span class="fn" data-page-node-id="XR10rfY9EzpzeBGF9aZW6Z">改默认骰</span><span class="sp" data-page-node-id="K4C7ruPRa6uzgJ2wZh6BCy"></span><span class="cmd" data-page-node-id="9tv8RqKk1aqTTexxaX3loC">.set defaultDice 1d20</span></span>
+    <span class="item" data-page-node-id="CN6EEeJCCFBIb1KVlQSapu"><span class="fn" data-page-node-id="MrEdYKkAKlCnJFCTp6i25S">备份</span><span class="sp" data-page-node-id="nRW20Fce2jMF7s1xJi78kj"></span><span class="cmd" data-page-node-id="9C9YGKkiEoa1jvRiqyANH9">.bak</span></span>
+  </div>
+
+  <!-- ==================== 骰子开关（v1.2 新增） ==================== -->
+  <div class="gap"></div>
+
+  <div class="row">
+    <span class="item"><span class="fn">骰子开关</span><span class="sp"></span><span class="cmd">.bot on / off</span></span>
+    <span class="item"><span class="fn">退群</span><span class="sp"></span><span class="cmd">.bot bye</span></span>
+    <span class="item"><span class="fn">查看状态</span><span class="sp"></span><span class="cmd">.bot</span></span>
+  </div>
+
+  <div class="gap"></div>
+
+  <div class="row" data-page-node-id="1ddYpkKWPHBVROY08tKBC3">
+    <span class="item" data-page-node-id="fBfa5Gwl01DWajDaob32BB"><span class="fn" data-page-node-id="90ec9r033oonwe6tUL5ZeY">英文别名</span><span class="sp" data-page-node-id="Etlf5BEu3rMbjHAbOk7WN0"></span><span class="cmd" data-page-node-id="BqWZKyUINowdZZ3vlhW9He">.roll .rc .coc7 .dnd5e</span></span>
+    <span class="item" data-page-node-id="OcOl7fXG7mH8C9xCVMa80D"><span class="fn" data-page-node-id="2hJvSMSZZp8IDBdNHJ2aKP">中文别名</span><span class="sp" data-page-node-id="QqUhX1zIs3YraFVmXGCtT8"></span><span class="cmd" data-page-node-id="AZ7LTc9cdpHT9yJQ5LBo10">.先攻 .帮助</span></span>
+  </div>
+
+  <!-- ==================== 底部 ==================== -->
+  <div class="footer" data-page-node-id="fRG88ZyFDOdI2AyvwF03Wn">
+    <span class="v" data-page-node-id="G5DJCZIz7HzvEZuUmhAiyQ">私聊 / 群聊 均可使用</span>
+    <span class="v" data-page-node-id="z2iNUwWuYZH04yF2YCFegf">·</span>
+    <span class="v" data-page-node-id="tewA1Uf5FACbERqXjeEkAM">更多指令发送</span>
+    <span class="k" data-page-node-id="ICy1gclrhfQOJgvfRSqhUq">.help</span>
+  </div>
+
+</div>
+
+
+</body></html>
