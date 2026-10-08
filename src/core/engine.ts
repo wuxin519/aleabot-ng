@@ -1544,6 +1544,16 @@ export class Engine {
     const sub = (args[0] || '').toLowerCase();
     const key = 'botEnabled';
 
+    // 群里常有多只骰娘共存：`.bot off@某某` 是点名别家的指令，本骰不该抢答。
+    // 判定（仅群聊）：消息 @ 了具体成员（at 消息段，或文本里手打了 @名字）却没 @ 本骰
+    // （mentionsSelf）→ 整条指令静默忽略；`.bot on@本骰` 点名本骰时仍正常响应。
+    // 空回复在发送层会被跳过（manager.ts 只发非空 reply），实现完全静默。
+    if (!msg.isPrivate && !msg.mentionsSelf) {
+      const atSegment = (msg.segments ?? []).some((s) => s.type === 'at' && s.targetId !== 'all');
+      const atInText = msg.text.includes('@');
+      if (atSegment || atInText) return { reply: '' };
+    }
+
     if (sub === 'on' || sub === '开启' || sub === 'up') {
       if (!this.canManageBot(msg)) return { reply: '⛔ 只有管理员可以开关骰子' };
       const wasOff = this.store.getSetting(msg.platform, msg.groupId, key, 'true') === 'false';
